@@ -16,9 +16,8 @@ function Register() {
   const [form, setForm] = useState(initialForm); 
   const [errors, setErrors] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [usersRef, setUsersRef] = useState(null)
+  const [usersRef, setUsersRef] = useState(firebase.database().ref('users'))
 
-  // console.log(firebase.database);
 
   const handleChange = event => {
     setForm(current => ({ ...current, [event.target.name]: event.target.value } ))
@@ -70,18 +69,18 @@ function Register() {
         .auth()
         .createUserWithEmailAndPassword(form.email, form.password)
         .then(createdUser => {
-
           console.log(createdUser)
           createdUser.user.updateProfile({
             displayName: form.username,
             photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
           })
+          .then(() => {
+            saveUser(createdUser).then(() => {
+              console.log('user saved');
+            })
+          })
           setForm(initialForm)
           setLoading(false)
-        }).then(() => {
-          // saveUser(createdUser).then(() => {
-          //   console.log('user saved');
-          // })
         })
         .catch(err => {
           console.log(err);
@@ -92,7 +91,10 @@ function Register() {
   }
 
   const saveUser = createdUser => {
-
+    return usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL
+    })
   }
   
   return (
