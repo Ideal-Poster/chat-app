@@ -1,22 +1,28 @@
 import React, {useEffect} from "react";
 import ReactDOM from "react-dom";
+import 'semantic-ui-css/semantic.min.css'
+import  { createStore } from 'redux';
+import { Provider, connect } from 'react-redux';
+import { composeWithDevTools } from 'redux-devtools-extension'
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
+
 import "./index.css";
 import App from "./components/App";
-import reportWebVitals from "./reportWebVitals";
-
-import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-
-
-import 'semantic-ui-css/semantic.min.css'
 import firebase from './firebase';
+import rootReducer from './reducers/index';
+import { setUser } from './actions';
+
+const store = createStore(rootReducer, composeWithDevTools())
 
 const Root = (props) => {
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         console.log(props);
+        props.setUser(user)
         props.history.push('/')
       }
     })
@@ -31,13 +37,15 @@ const Root = (props) => {
   )
 }
 
-const RootWithAuth = withRouter(Root)
+const RootWithAuth = withRouter(connect(null, {setUser})(Root))
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <RootWithAuth />
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <RootWithAuth />
+      </Router>
+    </Provider>
   </React.StrictMode>
   ,
   document.getElementById("root")
