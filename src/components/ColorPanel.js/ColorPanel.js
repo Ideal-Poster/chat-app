@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function ColorPanel() {
-  return (
-    <div>
-      Color Panel
-    </div>
-  )
+  return <div>Color Panel</div>;
 }
 
 export default ColorPanel;

@@ -3,7 +3,7 @@ import React from 'react'
 function MetaPanel() {
   return (
     <div>
-      Meat apa
+      Meta Panel
     </div>
   )
 }
