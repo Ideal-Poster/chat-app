@@ -1,13 +1,25 @@
 
 import './App.css';
 // import firebase from './firebase';
+import { Grid } from 'semantic-ui-react';
+import ColorPanel from './ColorPanel.js/ColorPanel';
+import SidePanel from './SidePanel/SidePanel';
+import Messages from './Messages/Messages';
+import MetaPanel from './MetaPanel/MetaPanel';
 
 
 function App() {
   return (
-    <div className="App">
-      <h1>hello</h1>
-    </div>
+    <Grid columns="equal" className="app" style={{ background: '#eee'}}>
+      <ColorPanel/>
+      <SidePanel/>
+      <Grid.Column style={{ marginLeft: 320 }}>
+        <Messages/>
+      </Grid.Column>
+      <Grid.Column width={4}>
+        <MetaPanel/>
+      </Grid.Column>
+    </Grid>
   );
 }
 

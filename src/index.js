@@ -14,6 +14,7 @@ import Register from './components/Auth/Register';
 import firebase from './firebase';
 import rootReducer from './reducers/index';
 import { setUser } from './actions';
+import Spinner from './components/Spinner/Spinner';
 
 const store = createStore(rootReducer, composeWithDevTools())
 
@@ -28,8 +29,8 @@ const Root = (props) => {
     })
   }, [])
   
-  return(
-      <Switch>
+  return props.isLoading ? <Spinner/> : (
+      <Switch> 
         <Route exact path="/" component={App}/>
         <Route path="/login" component={Login}/>
         <Route path="/register" component={Register}/>
@@ -37,7 +38,11 @@ const Root = (props) => {
   )
 }
 
-const RootWithAuth = withRouter(connect(null, {setUser})(Root))
+const mapStateToProps = (state) => ({
+  isLoading: state.user.isLoading
+})
+
+const RootWithAuth = withRouter(connect(mapStateToProps, {setUser})(Root))
 
 ReactDOM.render(
   <React.StrictMode>
