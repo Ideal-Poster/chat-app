@@ -13,7 +13,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import firebase from './firebase';
 import rootReducer from './reducers/index';
-import { setUser } from './actions';
+import { setUser, clearUser } from './actions';
 import Spinner from './components/Spinner/Spinner';
 
 const store = createStore(rootReducer, composeWithDevTools())
@@ -25,6 +25,9 @@ const Root = (props) => {
         console.log(props);
         props.setUser(user)
         props.history.push('/')
+      } else {
+        props.history.push('/login')
+        props.clearUser()
       }
     })
   }, [])
@@ -42,7 +45,11 @@ const mapStateToProps = (state) => ({
   isLoading: state.user.isLoading
 })
 
-const RootWithAuth = withRouter(connect(mapStateToProps, {setUser})(Root))
+const RootWithAuth = withRouter(
+  connect(
+    mapStateToProps,
+    {setUser, clearUser}
+  )(Root))
 
 ReactDOM.render(
   <React.StrictMode>

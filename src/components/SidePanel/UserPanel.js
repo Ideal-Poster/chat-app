@@ -1,5 +1,6 @@
 import React from 'react'
 import { Dropdown, Grid, Header, Icon } from 'semantic-ui-react'
+import firebase from '../../firebase';
 function UserPanel() {
   const dropdownOptions = () => [
     {
@@ -12,10 +13,18 @@ function UserPanel() {
       text: <span>Change Avatar</span>,
     },
     {
-      key: "signout",
-      text: <span>Sign Out</span>,
+      key: "signout", 
+      text: <span onClick={handleSignout}>Sign Out</span>,
     }
   ]
+
+  const handleSignout = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => console.log('signed out!'))
+  }
+
 
   return (
     <Grid style={{ background: '#4c3c4c'}}>

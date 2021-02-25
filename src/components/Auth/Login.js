@@ -55,7 +55,7 @@ function Login() {
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header ad="h2" icon color="violet" textAlign="center">
             <Icon name="code branch" color="violet"/>
-            Resigter
+            Log In
           </Header>
           <Form size="large" onSubmit={handleSubmit}>
             <Segment stacked>
