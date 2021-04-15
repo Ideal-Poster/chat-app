@@ -9,7 +9,8 @@ class Register extends Component {
     email: '',
     password: '',
     passwordConfirmation: '',
-    error: null
+    error: null,
+    loading: false
   } 
 
   isFormValid = () => {;
@@ -46,24 +47,32 @@ class Register extends Component {
     this.setState({[event.target.name]: event.target.value})
   }
 
+  handleInputErrors = (inputName) => {
+    const {error} = this.state;
+    return error && error.toLowerCase().includes(inputName) ? 'error' : ''
+  }
+
   handleSubmit = event => {
     if (this.isFormValid()) {
+      this.setState({ error: null, loading: true });
       event.preventDefault();
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
           console.log(createdUser);
+          this.setState({ loading: false })
         })
         .catch(err => {
           console.log(err);
+          this.setState({ error: err.message, loading: false })
         })
     }
   }
 
 
   render() {
-    const { username, email, password, passwordConfirmation } = this.state
+    const { username, email, password, passwordConfirmation, loading, error } = this.state
 
     return (
 
@@ -76,7 +85,6 @@ class Register extends Component {
 
           <Form size="large" onSubmit={this.handleSubmit}>
             <Segment stacked>
-
               <Form.Input
                 fluid
                 name="username"
@@ -85,7 +93,9 @@ class Register extends Component {
                 placeholder="Username"
                 onChange={this.handleChange}
                 type="text"
-                value={username}/>
+                value={username}
+                className={this.handleInputErrors('username')}
+                />
 
               <Form.Input
                 fluid
@@ -95,7 +105,9 @@ class Register extends Component {
                 placeholder="Email"
                 onChange={this.handleChange}
                 type="email"
-                value={email}/>
+                value={email}
+                className={this.handleInputErrors('email')}
+                />
 
               <Form.Input
                 fluid
@@ -105,7 +117,8 @@ class Register extends Component {
                 placeholder="Password"
                 onChange={this.handleChange}
                 type="password"
-                value={password}/>
+                value={password}
+                className={this.handleInputErrors('password')}/>
 
               <Form.Input
                 fluid
@@ -115,16 +128,23 @@ class Register extends Component {
                 placeholder="Password Confirmation"
                 onChange={this.handleChange}
                 type="password"
-                value={passwordConfirmation}/>
-                <Button color="orange" fluid size="large">Submit</Button>
+                value={passwordConfirmation}
+                className={this.handleInputErrors('password')}/>
+
+              <Button
+                className={loading ? 'loading' : ''}
+                disabled={loading}
+                color="orange"
+                fluid
+                size="large">Submit</Button>
             </Segment>
             </Form>
 
             {
-              this.state.error && (
+              error && (
                 <Message error>
                   <h3>Error</h3>
-                  <p>{this.state.error}</p>
+                  <p>{error}</p>
                 </Message>
               )
               
