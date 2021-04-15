@@ -8,25 +8,59 @@ class Register extends Component {
     username: '',
     email: '',
     password: '',
-    passwordConfirmation: ''
+    passwordConfirmation: '',
+    error: null
   } 
+
+  isFormValid = () => {;
+    // let error;
+    if(this.isFormEmpty(this.state)) {
+      this.setState({error: 'Fill in all fields'});
+      return false;
+    } else if (!this.isPasswordValid(this.state)) {
+      this.setState({error: 'Password is invalid'});
+      return false;
+    } else {
+      return true
+    }
+  }
+
+  isFormEmpty = ({ username, email, password, passwordConfirmation}) => {
+    return !username.length ||
+           !email.length ||
+           !password.length ||
+           !passwordConfirmation.length;
+  }
+
+  isPasswordValid = ({ password, passwordConfirmation }) => {
+    if(password.length < 6 || passwordConfirmation.length < 6) {
+      return false;
+    } else if (password !== passwordConfirmation) {
+      return false
+    } else {
+      return true
+    }
+  }
 
   handleChange = event => {
     this.setState({[event.target.name]: event.target.value})
   }
 
   handleSubmit = event => {
-    event.preventDefault();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(createdUser => {
-        console.log(createdUser);
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    if (this.isFormValid()) {
+      event.preventDefault();
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then(createdUser => {
+          console.log(createdUser);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    }
   }
+
 
   render() {
     const { username, email, password, passwordConfirmation } = this.state
@@ -82,12 +116,20 @@ class Register extends Component {
                 onChange={this.handleChange}
                 type="password"
                 value={passwordConfirmation}/>
-
                 <Button color="orange" fluid size="large">Submit</Button>
-
             </Segment>
-
             </Form>
+
+            {
+              this.state.error && (
+                <Message error>
+                  <h3>Error</h3>
+                  <p>{this.state.error}</p>
+                </Message>
+              )
+              
+            }
+
             <Message>Already a user? <Link to="/login">click here</Link></Message>
 
         </Grid.Column>
