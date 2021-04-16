@@ -34,31 +34,28 @@ class Login extends Component {
     this.setState({[event.target.name]: event.target.value})
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
     if (this.isFormValid(this.state)) {
       this.setState({ errors: [], loading: true });
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then(signedInUser => {
-          console.log(signedInUser)
+      try {
+        const signedInUser = await firebase
+          .auth()
+          .signInWithEmailAndPassword(this.state.email, this.state.password)
+        console.log(signedInUser)
+      } catch (error) {
+        console.log(error);
+        this.setState({
+          errors: this.state.errors.concat(error),
+          loading: false
         })
-        .catch(err => {
-          console.log(err);
-          this.setState({
-            errors: this.state.errors.concat(err),
-            loading: false
-          })
-        })
+      }
     }
   }
 
   render() {
     const { email, password, loading, errors } = this.state
-
     return (
-
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{maxWidth: 450}}>
           <Header as="h1" icon color="violet" textAlign="center">

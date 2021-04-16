@@ -4,7 +4,6 @@ import { Link } from "react-router-dom"
 import firebase from '../../firebase'
 import md5 from 'md5';
 
-import Login from './Login';
 class Register extends Component {
   state={
     username: '',
@@ -24,7 +23,7 @@ class Register extends Component {
       this.setState({errors: errors.concat(error)});
       return false;
     } else if (!this.isPasswordValid(this.state)) {
-      error = { message: "Fill in all the fields"}
+      error = { message: "Password is invalid"}
       this.setState({errors: errors.concat(error)});
       return false;
     } else {
@@ -69,38 +68,37 @@ class Register extends Component {
   displayErrors = errors =>
     errors.map((error, i) => <p key={i}>{error.message}</p>)
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
       event.preventDefault();
-      firebase
+
+      // create user
+      let createdUser
+      try {
+        createdUser = await firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then(createdUser => {
-          // update created users display name property and add avatar image
-          // console.log(createdUser);
-          createdUser
-          .user
-          .updateProfile({
-            displayName: this.state.username,
-            photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?=identicon`
-          })
-          .then(() => {
-            // save user to realtime database
-            this.saveUser(createdUser).then(() => {
-              console.log('user saved');
-            })
-          })
-          .catch(err => {
-            // display error
-            console.error(err);
-            this.setState({ errors: this.state.errors.concat(err), loading: false })
-          })
+      } catch (error) {
+        console.log(error);
+        this.setState({ errors: this.state.errors.concat(error), loading: false })
+      }
+
+      // save user to realtime database
+      try {
+        await createdUser
+        .user
+        .updateProfile({
+          displayName: this.state.username,
+          photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?=identicon`
         })
-        .catch(err => {
-          console.log(err);
-          this.setState({ errors: this.state.errors.concat(err), loading: false })
+        this.saveUser(createdUser).then(() => {
+          console.log('user saved');
         })
+      } catch (error) {
+        console.log(error);
+        this.setState({ errors: this.state.errors.concat(error), loading: false })
+      }
     }
   }
 
