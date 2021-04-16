@@ -4,18 +4,26 @@ import ReactDOM from 'react-dom';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
-
 import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
+import { createStore } from 'redux';
+import { Provider, connect } from 'react-redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
+import firebase from 'firebase/app';
 import Login from "./components/Auth/Login"
 import Register from "./components/Auth/Register"
-import firebase from 'firebase/app';
+import rootReducer from './reducers/index';
+import { setUser } from './actions'
+
+const store = createStore(rootReducer, composeWithDevTools())
 class Root extends React.Component  {
 
   componentDidMount() {
     // redirect to homepage if logged in
     firebase.auth().onAuthStateChanged(user => {
       if(user) {
+        console.log(user); 
+        this.props.setUser(user)
         this.props.history.push('/')
       }
     })
@@ -32,14 +40,15 @@ class Root extends React.Component  {
   }
 }
 
-const RootWithAuth = withRouter(Root)
+const RootWithAuth = withRouter(connect(null, { setUser })(Root))
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <RootWithAuth/>
-
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <RootWithAuth/>
+      </Router>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
