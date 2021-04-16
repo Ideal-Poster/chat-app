@@ -14,11 +14,13 @@ import Login from "./components/Auth/Login"
 import Register from "./components/Auth/Register"
 import rootReducer from './reducers/index';
 import { setUser } from './actions'
+import Spinner from './Spinner';
 
 const store = createStore(rootReducer, composeWithDevTools())
 class Root extends React.Component  {
 
   componentDidMount() {
+    console.log(this.props.isLoading)
     // redirect to homepage if logged in
     firebase.auth().onAuthStateChanged(user => {
       if(user) {
@@ -30,9 +32,9 @@ class Root extends React.Component  {
   }
 
   render() {
-    return(
+    return this.props.isLoading ? <Spinner/> : (
       <Switch>
-        <Route exact path="/"  component={App}/>
+        <Route exact path="/" component={App}/>
         <Route path="/login" component={Login}/>
         <Route path="/register" component={Register}/>
       </Switch>
@@ -40,7 +42,11 @@ class Root extends React.Component  {
   }
 }
 
-const RootWithAuth = withRouter(connect(null, { setUser })(Root))
+const mapStateToProps = state => ({
+  isLoading: state.user.isLoading
+})
+
+const RootWithAuth = withRouter(connect(mapStateToProps, { setUser })(Root))
 
 ReactDOM.render(
   <React.StrictMode>
