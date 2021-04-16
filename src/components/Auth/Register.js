@@ -71,7 +71,7 @@ class Register extends Component {
 
   handleSubmit = event => {
     if (this.isFormValid()) {
-      this.setState({ error: null, loading: true });
+      this.setState({ errors: [], loading: true });
       event.preventDefault();
       firebase
         .auth()
@@ -94,12 +94,12 @@ class Register extends Component {
           .catch(err => {
             // display error
             console.error(err);
-            this.setState({ error: this.state.errors.concat(err), loading: false })
+            this.setState({ errors: this.state.errors.concat(err), loading: false })
           })
         })
         .catch(err => {
           console.log(err);
-          this.setState({ error: this.state.errors.concat(err), loading: false })
+          this.setState({ errors: this.state.errors.concat(err), loading: false })
         })
     }
   }
@@ -112,7 +112,7 @@ class Register extends Component {
 
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{maxWidth: 450}}>
-          <Header as="h2" icon color="orange" textAlign="center">
+          <Header as="h1" icon color="orange" textAlign="center">
             <Icon name="puzzle piece" color="orange"/>
             Register
           </Header>
