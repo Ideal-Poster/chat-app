@@ -5,25 +5,44 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
 
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
 
 import Login from "./components/Auth/Login"
 import Register from "./components/Auth/Register"
+import firebase from 'firebase/app';
+class Root extends React.Component  {
 
-const Root = () => (
-  <Router>
-    <Switch>
-      <Route exact path="/"  component={App}/>
-      <Route path="/login" component={Login}/>
-      <Route path="/register" component={Register}/>
+  componentDidMount() {
+    // redirect to homepage if logged in
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) {
+        this.props.history.push('/')
+      }
+    })
+  }
 
-    </Switch>
-  </Router>
-)
+  render() {
+    return(
+      <Router>
+        <Switch>
+          <Route exact path="/"  component={App}/>
+          <Route path="/login" component={Login}/>
+          <Route path="/register" component={Register}/>
+
+        </Switch>
+      </Router>
+    )
+  }
+}
+
+const RootWithAuth = withRouter(Root)
 
 ReactDOM.render(
   <React.StrictMode>
-    <Root/>
+    <Router>
+      <RootWithAuth/>
+
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );
