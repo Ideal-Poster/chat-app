@@ -42,9 +42,9 @@ class Login extends Component {
         const signedInUser = await firebase
           .auth()
           .signInWithEmailAndPassword(this.state.email, this.state.password)
-        console.log(signedInUser)
+        // console.log(signedInUser)
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         this.setState({
           errors: this.state.errors.concat(error),
           loading: false
